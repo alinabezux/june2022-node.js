@@ -1,0 +1,11 @@
+{
+  "name": "june-2022",
+  "author": {
+    "name": "Alina Bezukh"
+  },
+  "version": "1.0",
+
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
