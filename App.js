@@ -1,5 +1,7 @@
 const express = require('express');
-const {fileServices} = require('./services')
+const {fileServices} = require('./services/file.services')
+const fs = require("fs/promises");
+const path = require("path");
 
 const app = express();
 
@@ -16,22 +18,28 @@ app.get('/', (req, res) => {
 })
 
 app.get('/users', async (req, res) => {
-    const users = await fileServices.reader();
+    // const users = await fileServices.reader();
+    const buffer = await fs.readFile(path.join(__dirname, 'DataBase', 'users.json'));
+    const users = JSON.parse(buffer.toString());
+
+    console.log(users);
     res.json(users)
 })
 
 app.post('/users', async (req, res) => {
     const userInfo = req.body;
 
-    if (userInfo.name.length < 2 || typeof userInfo.name !== 'string') {
-        return res.status(400).json('enter another name')
-    }
+    // if (userInfo.name.length < 2 || typeof userInfo.name !== 'string') {
+    //     return res.status(400).json('enter another name')
+    // }
+    //
+    // if (userInfo.age < 1 || Number.isNaN(+userInfo.age)) {
+    //     return res.status(400).json('enter another age')
+    // }
 
-    if (userInfo.age < 1 || typeof userInfo.age !== 'number') {
-        return res.status(400).json('enter another age')
-    }
-
-    const users = await fileServices.reader()
+    const buffer = await fs.readFile(path.join(__dirname, 'DataBase', 'users.json'));
+    const users = JSON.parse(buffer.toString());
+    // const users = await fileServices.reader()
 
     const newUser = {
         id: users[users.length - 1].id + 1,
@@ -40,32 +48,37 @@ app.post('/users', async (req, res) => {
     };
     users.push(newUser)
 
-    await fileServices.writer(users)
+    await fs.writeFile(path.join(__dirname, 'DataBase', 'users.json'), JSON.stringify(users))
+    // await fileServices.writer(users);
 
+    console.log(newUser);
     res.status(201).json(newUser)
 })
 
+
 app.get('/users/:userId', async (req, res) => {
-        const {userId} = req.params;
+    const {userId} = req.params;
 
-        const users = await fileServices.reader();
+    const buffer = await fs.readFile(path.join(__dirname, 'DataBase', 'users.json'));
+    const users = JSON.parse(buffer.toString());
+    // const users = await fileServices.reader()
 
-        const user = users.find((u) => u.id === +userId)
+    const user = users.find((u) => u.id === +userId);
 
-        if (!user) {
-            console.log('error');
-            return res.status(404).json(`user with id ${userId} doesn't exist!`)
-        }
-
-        res.json(user)
+    if (!user) {
+        return res.status(404).json(`User with id ${userId} not found`);
     }
-)
+
+    res.json(user);
+})
 
 app.put('/users/:userId', async (req, res) => {
     const {userId} = req.params;
     const newUserInfo = req.body;
 
-    const users = await fileServices.reader()
+    const buffer = await fs.readFile(path.join(__dirname, 'DataBase', 'users.json'));
+    const users = JSON.parse(buffer.toString())
+    // const users = await fileServices.reader()
 
     const index = users.findIndex((u) => u.id === +userId);
     if (index === -1) {
@@ -74,14 +87,18 @@ app.put('/users/:userId', async (req, res) => {
 
     users[index] = {...users[index], ...newUserInfo};
 
-    await fileServices.writer(users)
+    await fs.writeFile(path.join(__dirname, 'DataBase', 'users.json'), JSON.stringify(users))
+    // await fileServices.writer(users);
+
     res.status(201).json(users[index])
 })
 
-app.delete('users/:userId', async (req, res) => {
+app.delete('/users/:userId', async (req, res) => {
     const {userId} = req.params;
 
-    const users = fileServices.reader()
+    const buffer_del = await fs.readFile(path.join(__dirname, 'DataBase', 'users.json'));
+    const users = JSON.parse(buffer_del.toString())
+    // const users = fileServices.reader()
 
     const index = users.findIndex((u) => u.id === +userId);
     if (index === -1) {
@@ -89,7 +106,9 @@ app.delete('users/:userId', async (req, res) => {
     }
     users.splice(index, 1);
 
-    await fileServices.writer(users)
+
+    await fs.writeFile(path.join(__dirname, 'DataBase', 'users.json'), JSON.stringify(users))
+    // await fileServices.writer(users)
 
     res.status(204)
 
