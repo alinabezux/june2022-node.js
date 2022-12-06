@@ -1,11 +1,11 @@
 const router = require('express').Router();
 const controller = require('../controller/user.controller')
-const {checkIsUserExists} = require("../middleware/user.middleware");
+const mdlwr = require("../middleware/user.middleware");
 
 router.get('/', controller.getAllUsers)
 
-router.get('/:userId', checkIsUserExists.controller.getUserById)
+router.get('/:userId', mdlwr.checkIsUserExists.controller.getUserById)
 
-router.put('/:userId', checkIsUserExists.controller.updateUser)
+router.put('/:userId', mdlwr.checkIsUserExists.controller.updateUser)
 
 module.exports = router;
