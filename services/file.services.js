@@ -1,15 +1,14 @@
-const fs = require('fs/promises')
+const fs = require('fs/promises');
 const path = require('path')
 
-
-const pathToDB = path.join(process.cwd(), 'DataBase', 'users.json')
+const pathToFile = path.join(process.cwd(), 'DataBase', 'users.json')
 
 module.exports = {
     reader: async () => {
-        const buffer = await fs.readFile(pathToDB);
+        const buffer = await fs.readFile(pathToFile);
         return JSON.parse(buffer.toString());
     },
     writer: async (users) => {
-        await fs.writeFile(pathToDB, JSON.stringify(users));
-    },
-};
+        await fs.writeFile(pathToFile, JSON.stringify(users))
+    }
+}
