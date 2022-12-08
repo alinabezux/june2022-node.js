@@ -20,6 +20,7 @@ module.exports = {
                 name: userInfo.name,
                 age: userInfo.age
             }
+            console.log(newUser);
             users.push(newUser);
             await fileServices.writer(users);
 
@@ -48,13 +49,15 @@ module.exports = {
             next(e)
         }
     },
+
     deleteUser: async (req, res, next) => {
         try {
-            const {user,users} = req;
+            const {user, users} = req;
             const index = users.findIndex((u) => u.id === user.id);
-            users.splice(index,1);
+            users.splice(index, 1);
 
             await fileServices.writer(users);
+            console.log(`${users[index].name} was deleted.`)
             res.sendStatus(204);
         } catch (e) {
             next(e)
