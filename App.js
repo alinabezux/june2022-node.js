@@ -1,14 +1,14 @@
 const express = require('express');
+const mongoose = require('mongoose')
+mongoose.set('strictQuery', false);
+require('dotenv').config();
 
-const configs = require('./configs/configs')
-const {PORT} = require('./configs/configs');
 const userRouter = require('./router/user.router')
+const configs = require('./configs/configs')
 
 const app = express();
-
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-
 app.use('/users', userRouter);
 
 app.get('/', (req, res) => {
@@ -22,6 +22,7 @@ app.use((error, req, res, next) => {
     });
 });
 
-app.listen(configs.PORT, () => {
-    console.log(`Server listen port ${PORT}`)
+app.listen(configs.PORT, async () => {
+    await mongoose.connect(configs.MONGO_URL);
+    console.log(`Server listen port ${configs.PORT}.`);
 });

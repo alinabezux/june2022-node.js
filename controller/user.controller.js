@@ -1,30 +1,22 @@
-const fileServices = require('../services/file.services')
+const User = require('../DataBase/User')
 
 module.exports = {
     getAllUsers: async (req, res, next) => {
         try {
-            const users = await fileServices.reader();
+            const users = await User.find({});
 
-            res.json(users)
+            res.json(users);
         } catch (e) {
             next(e)
         }
     },
     createUser: async (req, res, next) => {
         try {
-            const userInfo = req.body;
-            const users = await fileServices.reader();
+            let userInfo = req.body;
 
-            const newUser = {
-                id: users[users.length - 1].id + 1,
-                name: userInfo.name,
-                age: userInfo.age
-            }
-            console.log(newUser);
-            users.push(newUser);
-            await fileServices.writer(users);
+            await User.create(userInfo)
 
-            res.status(201).json(newUser)
+            res.json('Created.')
         } catch (e) {
             next(e)
         }
@@ -38,13 +30,12 @@ module.exports = {
     },
     updateUser: async (req, res, next) => {
         try {
-            const {user, users, body} = req;
+            const userId = req.params.userId;
+            let newUserInfo = req.body;
 
-            const index = users.findIndex((u) => u.id === user.id);
-            users[index] = {...users[index], ...body};
+            await User.findByIdAndUpdate(userId, newUserInfo);
 
-            await fileServices.writer(users);
-            res.status(201).json(users[index])
+            res.json('Updated');
         } catch (e) {
             next(e)
         }
@@ -52,13 +43,9 @@ module.exports = {
 
     deleteUser: async (req, res, next) => {
         try {
-            const {user, users} = req;
-            const index = users.findIndex((u) => u.id === user.id);
-            users.splice(index, 1);
+            await User.deleteOne({_id: req.params.userId});
 
-            await fileServices.writer(users);
-            console.log(`${users[index].name} was deleted.`)
-            res.sendStatus(204);
+            res.status(204).json('Deleted.')
         } catch (e) {
             next(e)
         }
