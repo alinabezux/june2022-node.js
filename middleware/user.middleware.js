@@ -1,5 +1,5 @@
 const ApiError = require("../error/ApiError");
-const userService = require("../service/user.service");
+const {userService} = require("../service");
 const {userNormalizator} = require("../helper");
 
 module.exports = {
