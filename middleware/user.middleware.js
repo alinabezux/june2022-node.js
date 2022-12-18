@@ -1,5 +1,5 @@
 const ApiError = require("../error/ApiError");
-const {userService} = require("../service");
+const userService = require("../service/user.service");
 const {userNormalizator} = require("../helper");
 
 module.exports = {
@@ -7,7 +7,7 @@ module.exports = {
         try {
             const {userId} = req.params;
 
-            const user = await userService.findOne({_id: userId})
+            const user = await userService.findOneByParams({_id: userId})
 
             if (!user) {
                 throw new ApiError('user is not exist', 404)
@@ -64,9 +64,9 @@ module.exports = {
                 throw new ApiError('Email not exist.', 400)
             }
 
-            const user = await userService.findOne({email});
+            const user = await userService.findOneByParams({email});
             if (user) {
-                throw new ApiError('User with tis email already exists.', 409)
+                throw new ApiError('User with this email already exists.', 409)
             }
 
             next();
