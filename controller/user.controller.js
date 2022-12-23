@@ -1,4 +1,5 @@
-const User = require('../DataBase/User')
+const User = require('../DataBase/User');
+const oauthService = require('../service/oauth.service');
 
 module.exports = {
     getAllUsers: async (req, res, next) => {
@@ -10,17 +11,19 @@ module.exports = {
             next(e)
         }
     },
+
     createUser: async (req, res, next) => {
         try {
-            let userInfo = req.body;
+            const hashPassword = await oauthService.hashPassword(req.body.password);
 
-            await User.create(userInfo)
+            await User.create({...req.body, password: hashPassword})
 
             res.json('Created.')
         } catch (e) {
             next(e)
         }
     },
+
     getUserById: async (req, res, next) => {
         try {
             res.json(req.user)
@@ -28,6 +31,7 @@ module.exports = {
             next(e)
         }
     },
+
     updateUser: async (req, res, next) => {
         try {
             const userId = req.params.userId;
@@ -49,5 +53,7 @@ module.exports = {
         } catch (e) {
             next(e)
         }
-    }
+    },
+
+
 }
