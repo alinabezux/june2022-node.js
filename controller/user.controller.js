@@ -1,4 +1,5 @@
 const {userService} = require('../service');
+const User = require("../DataBase/User");
 
 module.exports = {
     getAllUsers: async (req, res, next) => {

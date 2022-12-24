@@ -58,13 +58,14 @@ module.exports = {
     },
     checkIsEmailUnique: async (req, res, next) => {
         try {
-            const {email} = req.body;
+            const email = req.body.email;
 
             if (!email) {
                 throw new ApiError('Email not exist.', 400)
             }
 
             const user = await userService.findOneByParams({email});
+
             if (user) {
                 throw new ApiError('User with this email already exists.', 409)
             }
