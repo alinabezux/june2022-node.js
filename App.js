@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 app.use((error, req, res, next) => {
     res.status(error.status || 500).json({
         message: error.message || 'unknown message',
-        status: express.status || 500
+        status: error.status || 500
     });
 });
 
