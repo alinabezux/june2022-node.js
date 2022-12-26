@@ -11,7 +11,7 @@ module.exports = {
             next(e)
         }
     },
-    getUserById: async (req, res, next) => {
+    getUserByIdWithCar: async (req, res, next) => {
         try {
             const user = await userService.findByIdWithCars(req.params._id);
 
