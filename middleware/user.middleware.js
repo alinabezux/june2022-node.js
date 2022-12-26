@@ -28,7 +28,7 @@ module.exports = {
                 throw new ApiError('Wrong name', 400)
             }
             if (!email || !email.includes('@')) {
-                throw new ApiError('Wrong name', 400)
+                throw new ApiError('Wrong email', 400)
             }
             if (!age || age < 0 || Number.isNaN(+age)) {
                 throw new ApiError('Wrong name', 400)

@@ -16,9 +16,8 @@ module.exports = {
 
             const car = await carService.findOneByIdWithUser(carId);
             res.json(car);
-
         } catch (e) {
-            next(e)
+            next(e);
         }
     },
 
