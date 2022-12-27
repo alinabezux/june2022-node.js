@@ -1,23 +1,25 @@
-const User = require('../DataBase/User');
+const User = require("../DataBase/User");
 
 module.exports = {
-    findByParams: (filter = {}) => {
+    findByParams: async (filter = {}) => {
         return User.find(filter);
     },
-    findOneByParams: (filter = {}) => {
+    findOneByParams: async (filter = {}) => {
         return User.findOne(filter)
     },
     findByIdWithCars: async (userId) => {
         const res = await User.aggregate([
             {
-                $match: {_id: userId}
+                $match: {
+                    _id: userId
+                }
             },
             {
                 $lookup: {
                     from: 'cars',
                     localField: '_id',
                     foreignField: 'user',
-                    as: 'cars'
+                    as: 'cars',
                 }
             }
         ]);
@@ -27,10 +29,10 @@ module.exports = {
     createUser: async (userInfo) => {
         return User.create(userInfo)
     },
-    update: (userId, newUserInfo) => {
+    update: async (userId, newUserInfo) => {
         return User.findByIdAndUpdate(userId, newUserInfo, {new: true})
     },
-    delete: (userId) => {
+    delete: async (userId) => {
         return User.deleteOne({_id: userId})
     }
 }

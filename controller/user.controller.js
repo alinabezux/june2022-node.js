@@ -1,5 +1,4 @@
 const {userService} = require('../service');
-const User = require("../DataBase/User");
 
 module.exports = {
     getAllUsers: async (req, res, next) => {
@@ -11,20 +10,18 @@ module.exports = {
             next(e)
         }
     },
-    getUserByIdWithCar: async (req, res, next) => {
+    getUserByIdWithCars: async (req, res, next) => {
         try {
-            const user = await userService.findByIdWithCars(req.params._id);
+            const user = await userService.findByIdWithCars(req.user._id);
 
-            res.json(user)
+            res.json(user);
         } catch (e) {
             next(e)
         }
     },
     createUser: async (req, res, next) => {
         try {
-            let userInfo = req.body;
-
-            const user = await userService.createUser(userInfo);
+            const user = await userService.createUser(req.body);
             res.status(201).json(user)
         } catch (e) {
             next(e)
@@ -44,12 +41,11 @@ module.exports = {
     },
     deleteUser: async (req, res, next) => {
         try {
-            const userId = req.params.userId;
-            await userService.delete(userId);
+            await userService.delete(req.params.userId);
 
             res.status(204).json('Deleted.')
         } catch (e) {
-            next(e)
+            next(e);
         }
     }
 }

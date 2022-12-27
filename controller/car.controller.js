@@ -15,6 +15,7 @@ module.exports = {
             const {carId} = req.params;
 
             const car = await carService.findOneByIdWithUser(carId);
+
             res.json(car);
         } catch (e) {
             next(e);
@@ -23,9 +24,7 @@ module.exports = {
 
     createCar: async (req, res, next) => {
         try {
-            let carInfo = req.body;
-
-            const car = await carService.create(carInfo)
+            const car = await carService.create(req.body)
 
             res.status(201).json(car)
         } catch (e) {

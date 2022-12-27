@@ -1,13 +1,13 @@
 const ApiError = require("../error/ApiError");
-const {userService} = require("../service");
-const {userNormalizator} = require("../helper");
+const {userService} = require('../service');
+const {userNormalizator} = require('../helper');
 
 module.exports = {
     checkIsUserExists: async (req, res, next) => {
         try {
             const {userId} = req.params;
 
-            const user = await userService.findOneByParams({_id: userId})
+            const user = await userService.findOneByParams({_id: userId});
 
             if (!user) {
                 throw new ApiError('user is not exist', 404)
