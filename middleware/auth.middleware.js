@@ -1,15 +1,13 @@
-const authValidator = require("../validators/auth.validator");
+const authValidator = require('../validator/auth.validator');
 const ApiError = require("../error/ApiError");
 
 module.exports = {
-    isBodyValid: async (res, req, next) => {
+    isBodyValid: async (req, res, next) => {
         try {
-            const loginInfo = req.body;
-
-            const validate = authValidator.loginValidator.validate(loginInfo);
+            const validate = authValidator.loginValidator.validate(req.body);
 
             if (validate.error) {
-                throw new ApiError(validate.error.message, 400);
+                throw new ApiError(validate.error.message);
             }
 
             next();

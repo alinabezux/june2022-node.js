@@ -1,18 +1,22 @@
+const User = require("../dataBase/User");
 const ApiError = require("../error/ApiError");
-const User = require('../DataBase/User')
-const userValidator = require('../validators/user.validator');
-const commonValidator = require('../validators/common.validator');
+const userValidator = require("../validator/user.validator");
+const commonValidator = require("../validator/common.validator");
 
 module.exports = {
-    isUserIdValid: async (req, res, next) => {
+    getUserDynamically: (fieldName, from = 'body', dbField = fieldName) => async (req, res, next) => {
         try {
-            const {userId} = req.params;
-            const validate = commonValidator.idValidator.validate(userId);
+            const fieldToSearch = req[from][fieldName];
 
-            if (validate.error) {
-                throw new ApiError(validate.error.message, 400);
+            const user = await User.findOne({ [dbField]: fieldToSearch });
+
+            if (!user) {
+                throw new ApiError('Inna not found', 404);
             }
-            next();
+
+            req.user = user;
+
+            next()
         } catch (e) {
             next(e);
         }
@@ -20,65 +24,69 @@ module.exports = {
 
     checkIsEmailUnique: async (req, res, next) => {
         try {
-            let {email} = req.body;
+            const { email } = req.body;
 
             if (!email) {
-                throw new ApiError('Email not exist.', 400)
+                throw new ApiError('Email not present', 400);
             }
 
-            let user = await User.findOne({email});
+            const user = await User.findOne({ email });
+
             if (user) {
-                throw new ApiError('User with this email already exists.', 409)
+                throw new ApiError('User with this email already exists', 409);
             }
 
             next();
         } catch (e) {
-            next(e)
+            next(e);
         }
     },
 
     isNewUserValid: async (req, res, next) => {
         try {
-            const newUserInfo = req.body;
-            const validate = userValidator.newUserValidator.validate(newUserInfo);
+            let validate = userValidator.newUserValidator.validate(req.body);
 
             if (validate.error) {
                 throw new ApiError(validate.error.message, 400);
             }
-            next();
+
+            req.body = validate.value;
+
+            next()
         } catch (e) {
             next(e);
         }
     },
 
-    isUpdateUserValid: async (req, res, next) => {
+    isEditUserValid: async (req, res, next) => {
         try {
-            const updateUserInfo = req.body;
-            const validate = userValidator.updateUserValidator.validate(updateUserInfo);
+            let validate = userValidator.editUserValidator.validate(req.body);
 
             if (validate.error) {
                 throw new ApiError(validate.error.message, 400);
             }
-            next();
+
+            req.body = validate.value;
+
+            next()
         } catch (e) {
             next(e);
         }
     },
 
-    getUserDynamically: (fieldName, from = 'body', dbField = fieldName) => async (res, req, next) => {
+    isUserIdValid: async (req, res, next) => {
         try {
-            const fieldToSearch = req[from][fieldName];
-            const user = await User.findOne({[dbField]: fieldToSearch});
+            const { userId } = req.params;
 
-            if (!user) {
-                throw new ApiError('User not found', 404)
+            const validate = commonValidator.idValidator.validate(userId);
+
+            if (validate.error) {
+                throw new ApiError(validate.error.message, 400);
             }
 
             next();
         } catch (e) {
             next(e);
         }
-
     }
-
 }

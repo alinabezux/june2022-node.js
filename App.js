@@ -1,31 +1,32 @@
 const express = require('express');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
-require('dotenv').config();
+require('dotenv').config()
 
-const {userRouter, authRouter} = require('./router')
-const configs = require('./configs/configs')
+const userRouter = require('./router/user.router');
+const authRouter = require('./router/auth.router');
+const configs = require('./config/configs');
 
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/auth', authRouter);
 app.use('/users', userRouter);
 
 app.get('/', (req, res) => {
-    res.json('welcome')
+    res.json('WELOCME')
 });
 
-app.use((error, req, res, next) => {
-    res.status(error.status || 500).json({
-        message: error.message || 'unknown message',
-        status: express.status || 500
+app.use((err, req, res, next) => {
+    res.status(err.status || 500).json({
+        message: err.message || 'Unknown error',
+        status: err.status || 500
     });
 });
 
 app.listen(configs.PORT, async () => {
-    await mongoose.connect(configs.MONGO_URL);
-    console.log(`Server listen port ${configs.PORT}.`);
+    await mongoose.connect('mongodb://127.0.0.1:27017/june2022');
+    console.log(`Server listen ${configs.PORT}`);
 });
