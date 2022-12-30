@@ -6,4 +6,6 @@ const userMdlwr = require('../middleware/user.middleware');
 
 router.post('/login', mdlwr.isBodyValid, userMdlwr.getUserDynamically('email'), controller.login);
 
+router.post('/refresh', mdlwr.checkRefreshToken, controller.refresh);
+
 module.exports = router;
