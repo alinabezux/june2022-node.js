@@ -31,7 +31,7 @@ module.exports = {
             if (!tokenInfo) {
                 throw new ApiError('Token not valid', 401);
             }
-
+            req.tokenInfo = tokenInfo;
             next();
         } catch (e) {
             next(e);
