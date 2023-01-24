@@ -8,9 +8,12 @@ router.post('/login', mdlwr.isBodyValid, userMdlwr.getUserDynamically('email'), 
 
 router.post('/refresh', mdlwr.checkRefreshToken, controller.refresh);
 
-router.post('/logout',mdlwr.checkAccessToken,controller.logout);
+router.post('/logout', mdlwr.checkAccessToken, controller.logout);
 
-router.post('/logoutAll',mdlwr.checkAccessToken,controller.logoutAll);
+router.post('/logoutAll', mdlwr.checkAccessToken, controller.logoutAll);
+
+router.post('/password/forgot', userMdlwr.getUserDynamically('email'), controller.forgotPassword);
+router.put('/password/forgot', mdlwr.checkActionToken, controller.setNewPassword)
 
 
 module.exports = router;

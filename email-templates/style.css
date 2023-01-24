@@ -1,4 +1,9 @@
-.footer{
+.footer {
     color: white;
     background-color: black;
+}
+
+.h1 {
+    color: olivedrab;
+    background-color: yellow;
 }

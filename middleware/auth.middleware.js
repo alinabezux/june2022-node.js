@@ -1,8 +1,11 @@
 const authValidator = require('../validator/auth.validator');
 const ApiError = require("../error/ApiError");
 const oauthService = require("../service/oauth.service");
+const ActionToken = require("../dataBase/ActionToken");
 const OAuth = require("../dataBase/OAuth");
 const {tokenTypeEnum} = require("../enum");
+const {FORGOT_PASSWORD_ACTION_ENUM} = require("../config/tokenActions.enum");
+const {FORGOT_PASSWORD} = require("../email-templates/email-actions.enum");
 module.exports = {
     isBodyValid: async (req, res, next) => {
         try {
@@ -58,5 +61,32 @@ module.exports = {
         } catch (e) {
             next(e);
         }
+    },
+
+    checkActionToken: async (req, res, next) => {
+        try {
+            const actionToken = req.get('Authorization');
+
+            if (!actionToken) {
+                throw new ApiError('No token', 401);
+            }
+
+            oauthService.checkActionToken(actionToken, FORGOT_PASSWORD_ACTION_ENUM);
+
+            const tokenInfo = await ActionToken
+                .findOne({token: ActionToken, tokenType: FORGOT_PASSWORD_ACTION_ENUM})
+                .populate('_user_id');
+
+
+            if (!tokenInfo) {
+                throw new ApiError('Token not valid', 401);
+            }
+
+            req.tokenInfo = tokenInfo;
+            next();
+        } catch (e) {
+            next(e);
+        }
     }
+
 }
