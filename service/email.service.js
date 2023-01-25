@@ -1,11 +1,11 @@
 const nodemailer = require('nodemailer');
-const {NO_REPLY_EMAIL, NO_REPLY_EMAIL_PASSWORD} = require('../config/configs');
-const EmailTemplates = require('email-templates');
+const {NO_REPLY_EMAIL, NO_REPLY_EMAIL_PASSWORD, FRONTEND_URL} = require('../config/configs');
+const hbs = require('nodemailer-express-handlebars');
 const emailTemplates = require('../email-templates')
 const ApiError = require("../error/ApiError");
 const path = require("path");
 
-const sendEmail = async (receiverMail, emailAction, locals = {}) => {
+const sendEmail = async (receiverMail, emailAction, context = {}) => {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -15,25 +15,31 @@ const sendEmail = async (receiverMail, emailAction, locals = {}) => {
     });
 
     const templateInfo = emailTemplates[emailAction]
-    if (!templateInfo) {
+    if (!templateInfo.subject || !templateInfo.templateName) {
         throw new ApiError('Wrong template', 500)
     }
 
-    const templateRenderer = new EmailTemplates({
-        views: {
-            root: path.join(process.cwd(), 'email-templates')
-        }
-    });
+    const options = {
+        viewEngine: {
+            defaultLayout: 'main',
+            layoutsDir: path.join(process.cwd(), 'email-templates', 'layouts'),
+            partialsDir: path.join(process.cwd(), 'email-templates', 'partials'),
+            extname: '.hbs'
+        },
+        extName: '.hbs',
+        viewsPath: path.join(process.cwd(), 'email-templates', 'views')
+    }
 
-    Object.assign(locals || {}, {frontendURL: 'google.com'});
+    transporter.use('compile', hbs(options))
 
-    const html = await templateRenderer.render(templateInfo.templateName, locals);
+    context.frontendURL = FRONTEND_URL;
 
     return transporter.sendMail({
         from: 'No reply',
         to: receiverMail,
         subject: templateInfo.subject,
-        html
+        template: templateInfo.templateName,
+        context ,
     })
 
 };
