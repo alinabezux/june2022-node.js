@@ -73,7 +73,7 @@ module.exports = {
         try {
             const user = req.user;
 
-            const actionToken = oauthService.generateActionToken(FORGOT_PASSWORD_ACTION_ENUM, {email: user.email});
+            const   actionToken = oauthService.generateActionToken(FORGOT_PASSWORD_ACTION_ENUM, {email: user.email});
             const forgotPassFEUrl = `${FRONTEND_URL}/password/new?token=${actionToken}`
 
             await ActionToken.create({token: actionToken, _user_id: user._id, tokenType: FORGOT_PASSWORD_ACTION_ENUM});
@@ -90,10 +90,10 @@ module.exports = {
         try {
             const {user, body} = req;
 
-            const newHashPassword = await oauthService.hashPassword(body.password);
+            const hashPassword = await oauthService.hashPassword(body.password);
 
             await ActionToken.deleteOne({token: req.get('Authorization')});
-            await User.updateOne({id: user._id}, {password: newHashPassword});
+            await User.updateOne({_id: user._id}, {password: hashPassword});
 
             res.json('ok');
         } catch (e) {

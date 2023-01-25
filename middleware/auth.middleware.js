@@ -74,7 +74,7 @@ module.exports = {
             oauthService.checkActionToken(actionToken, FORGOT_PASSWORD_ACTION_ENUM);
 
             const tokenInfo = await ActionToken
-                .findOne({token: ActionToken, tokenType: FORGOT_PASSWORD_ACTION_ENUM})
+                .findOne({token: actionToken, tokenType: FORGOT_PASSWORD_ACTION_ENUM})
                 .populate('_user_id');
 
 
@@ -82,7 +82,8 @@ module.exports = {
                 throw new ApiError('Token not valid', 401);
             }
 
-            req.tokenInfo = tokenInfo;
+            req.user = tokenInfo._user_id;
+
             next();
         } catch (e) {
             next(e);
