@@ -5,7 +5,6 @@ const ActionToken = require("../dataBase/ActionToken");
 const OAuth = require("../dataBase/OAuth");
 const {tokenTypeEnum} = require("../enum");
 const {FORGOT_PASSWORD_ACTION_ENUM} = require("../config/tokenActions.enum");
-const {FORGOT_PASSWORD} = require("../email-templates/email-actions.enum");
 module.exports = {
     isBodyValid: async (req, res, next) => {
         try {

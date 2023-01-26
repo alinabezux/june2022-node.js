@@ -27,7 +27,7 @@ const sendEmail = async (receiverMail, emailAction, context = {}) => {
             extname: '.hbs'
         },
         extName: '.hbs',
-        viewsPath: path.join(process.cwd(), 'email-templates', 'views')
+        viewPath: path.join(process.cwd(), 'email-templates', 'views')
     }
 
     transporter.use('compile', hbs(options))
@@ -39,7 +39,7 @@ const sendEmail = async (receiverMail, emailAction, context = {}) => {
         to: receiverMail,
         subject: templateInfo.subject,
         template: templateInfo.templateName,
-        context ,
+        context,
     })
 
 };

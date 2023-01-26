@@ -1,4 +1,4 @@
-const {WELCOME, FORGOT_PASSWORD} = require("./email-actions.enum");
+const {WELCOME, FORGOT_PASSWORD} = require("../config/email-actions.enum");
 module.exports = {
     [WELCOME]: {
         subject: 'Welcome on board',
@@ -6,6 +6,6 @@ module.exports = {
     },
     [FORGOT_PASSWORD]: {
         subject: 'Your password is under protect',
-        templateName: 'forgot_pass'
+        templateName: 'forgot-pass'
     }
 }

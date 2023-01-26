@@ -3,9 +3,9 @@ const emailService = require('../service/email.service');
 const ActionToken = require('../dataBase/ActionToken');
 const OAuth = require("../dataBase/OAuth");
 const User = require('../dataBase/User');
-const {WELCOME, FORGOT_PASSWORD} = require("../email-templates/email-actions.enum");
 const {FRONTEND_URL} = require("../config/configs");
 const {FORGOT_PASSWORD_ACTION_ENUM} = require("../config/tokenActions.enum");
+const {WELCOME, FORGOT_PASSWORD} = require("../config/email-actions.enum");
 
 module.exports = {
     login: async (req, res, next) => {
@@ -71,13 +71,13 @@ module.exports = {
 
     forgotPassword: async (req, res, next) => {
         try {
-            const user = req.user;
+            const {_id, email, name} = req.user;
 
-            const actionToken = oauthService.generateActionToken(FORGOT_PASSWORD_ACTION_ENUM, {email: user.email});
+            const actionToken = oauthService.generateActionToken(FORGOT_PASSWORD_ACTION_ENUM, {email: email});
             const forgotPassFEUrl = `${FRONTEND_URL}/password/new?token=${actionToken}`
 
-            await ActionToken.create({token: actionToken, _user_id: user._id, tokenType: FORGOT_PASSWORD_ACTION_ENUM});
-            await emailService.sendEmail('alinabezux@gmail.com', FORGOT_PASSWORD, {url: forgotPassFEUrl});
+            await ActionToken.create({token: actionToken, _user_id: _id, tokenType: FORGOT_PASSWORD_ACTION_ENUM});
+            await emailService.sendEmail(email, FORGOT_PASSWORD, {url: forgotPassFEUrl, userName: name});
 
             res.json('ok');
 
