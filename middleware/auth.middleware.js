@@ -1,10 +1,15 @@
 const authValidator = require('../validator/auth.validator');
-const ApiError = require("../error/ApiError");
 const oauthService = require("../service/oauth.service");
+const {compareOldPasswords} = require("../service/oauth.service");
 const ActionToken = require("../dataBase/ActionToken");
 const OAuth = require("../dataBase/OAuth");
+const OldPassword = require('../dataBase/OldPassword');
+
+const ApiError = require("../error/ApiError");
+
 const {tokenTypeEnum} = require("../enum");
 const {FORGOT_PASSWORD_ACTION_ENUM} = require("../config/tokenActions.enum");
+
 module.exports = {
     isBodyValid: async (req, res, next) => {
         try {
@@ -64,6 +69,7 @@ module.exports = {
 
     checkActionToken: async (req, res, next) => {
         try {
+
             const actionToken = req.get('Authorization');
 
             if (!actionToken) {
@@ -73,7 +79,7 @@ module.exports = {
             oauthService.checkActionToken(actionToken, FORGOT_PASSWORD_ACTION_ENUM);
 
             const tokenInfo = await ActionToken
-                .findOne({token: ActionToken, tokenType: FORGOT_PASSWORD_ACTION_ENUM})
+                .findOne({token: actionToken, tokenType: FORGOT_PASSWORD_ACTION_ENUM})
                 .populate('_user_id');
 
 
@@ -81,11 +87,33 @@ module.exports = {
                 throw new ApiError('Token not valid', 401);
             }
 
-            req.tokenInfo = tokenInfo;
+            req.tokenInfo = tokenInfo._user_id;
             next();
         } catch (e) {
             next(e);
         }
-    }
+    },
+    checkOldPasswords: async (res, req, next) => {
+        try {
+            const {user, body} = req;
+            const oldPasswords = await OldPassword.find({_user_id: user._id}).lean;
 
+            console.log(oldPasswords.length);
+
+            if (!oldPasswords.length) {
+                return next();
+            }
+
+            const isPasswordsSame = oldPasswords.some((record) => compareOldPasswords(record.password, body.password));
+
+            if (isPasswordsSame) {
+                throw new ApiError('This password has been used already.');
+            }
+
+            res.json('ok');
+        } catch (e) {
+            next(e);
+        }
+
+    }
 }
