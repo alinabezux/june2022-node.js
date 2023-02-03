@@ -33,12 +33,13 @@ module.exports = {
             }
 
             oauthService.checkToken(accessToken);
+
             const tokenInfo = await OAuth.findOne({accessToken});
 
             if (!tokenInfo) {
                 throw new ApiError('Token not valid', 401);
             }
-            req.tokenInfo = tokenInfo;
+
             next();
         } catch (e) {
             next(e);
@@ -54,6 +55,7 @@ module.exports = {
             }
 
             oauthService.checkToken(refreshToken, tokenTypeEnum.refreshToken);
+
             const tokenInfo = await OAuth.findOne({refreshToken});
 
             if (!tokenInfo) {
@@ -87,33 +89,36 @@ module.exports = {
                 throw new ApiError('Token not valid', 401);
             }
 
-            req.tokenInfo = tokenInfo._user_id;
+            req.user = tokenInfo._user_id;
+
             next();
         } catch (e) {
             next(e);
         }
     },
+
     checkOldPasswords: async (res, req, next) => {
         try {
             const {user, body} = req;
-            const oldPasswords = await OldPassword.find({_user_id: user._id}).lean;
-
-            console.log(oldPasswords.length);
+            const oldPasswords = await OldPassword.find({_user_id: user._id}, {password: 1}).lean();
 
             if (!oldPasswords.length) {
                 return next();
             }
 
-            const isPasswordsSame = oldPasswords.some((record) => compareOldPasswords(record.password, body.password));
+            const results = await Promise.all(oldPasswords.map((record) => {
+                compareOldPasswords(record.password, body.password)
+            }));
+
+            const isPasswordsSame = results.some((res) => res);
 
             if (isPasswordsSame) {
-                throw new ApiError('This password has been used already.');
+                throw new ApiError('This password has been used already. ', 409);
             }
 
-            res.json('ok');
+            next();
         } catch (e) {
             next(e);
         }
-
-    }
+    },
 }

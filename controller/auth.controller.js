@@ -1,9 +1,9 @@
 const oauthService = require("../service/oauth.service");
 const emailService = require('../service/email.service');
 const ActionToken = require('../dataBase/ActionToken');
+const OldPassword = require('../dataBase/OldPassword');
 const OAuth = require("../dataBase/OAuth");
 const User = require('../dataBase/User');
-const OldPassword = require('../dataBase/OldPassword');
 
 const {FRONTEND_URL} = require("../config/configs");
 const {FORGOT_PASSWORD_ACTION_ENUM} = require("../config/tokenActions.enum");
@@ -14,7 +14,7 @@ module.exports = {
         try {
             const {user, body} = req;
 
-            await emailService.sendEmail(user.email, WELCOME, {userName: user.name})
+            await emailService.sendEmail(user.email, WELCOME, {userName: user.name},)
 
             await oauthService.comparePasswords(user.password, body.password);
 

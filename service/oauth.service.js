@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+
 const ApiError = require("../error/ApiError");
 const {
     ACCESS_SECRET,
@@ -7,9 +8,9 @@ const {
     CONFIRM_ACCOUNT_ACTION_TOKEN_SECRET,
     FORGOT_PASSWORD_ACTION_TOKEN_SECRET
 } = require("../config/configs");
+
 const {tokenTypeEnum} = require("../enum");
 const tokenTypes = require('../config/tokenActions.enum')
-const {config} = require("dotenv");
 
 module.exports = {
     hashPassword: (password) => bcrypt.hash(password, 10),
@@ -35,6 +36,7 @@ module.exports = {
             refreshToken
         }
     },
+
     generateActionToken: (actionType, dataToSign = {}) => {
         let secretWord = '';
 

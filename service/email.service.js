@@ -7,6 +7,7 @@ const path = require("path");
 
 const sendEmail = async (receiverMail, emailAction, context = {}) => {
     const transporter = nodemailer.createTransport({
+        from:'No reply',
         service: 'gmail',
         auth: {
             user: NO_REPLY_EMAIL,
@@ -15,7 +16,7 @@ const sendEmail = async (receiverMail, emailAction, context = {}) => {
     });
 
     const templateInfo = emailTemplates[emailAction]
-    if (!templateInfo.subject || !templateInfo.templateName) {
+    if (!templateInfo?.subject || !templateInfo.templateName) {
         throw new ApiError('Wrong template', 500)
     }
 
