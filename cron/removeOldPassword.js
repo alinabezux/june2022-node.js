@@ -10,9 +10,14 @@ module.exports = new CronJob(
     '0,20,40 * * * * *',
     async function () {
         try {
+            const users = await fetch('https://jsonplaceholder.typicode.com/users').then(a => a.json());
+
+
             console.log('Start removing passwords...');
+
             const yearAgo = dayjs().utc().subtract(1, 'year');
             await OldPassword.deleteMany({createdAt: {$lte: {yearAgo}}});
+
             console.log('Finish removing passwords.');
 
         } catch (e) {

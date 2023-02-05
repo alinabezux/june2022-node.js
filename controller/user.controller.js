@@ -35,9 +35,7 @@ module.exports = {
 
     createUser: async (req, res, next) => {
         try {
-            const hashPassword = await oauthService.hashPassword(req.body.password);
-
-            await User.create({ ...req.body, password: hashPassword });
+            User.createUserWithHashPassword(req.body);
 
             res.status(201).json('Ok')
         } catch (e) {
@@ -47,7 +45,7 @@ module.exports = {
 
     deleteUserById: async (req, res, next) => {
         try {
-            await User.deleteOne({ _id: req.params.userId });
+            await User.deleteOne({_id: req.params.userId});
 
             res.status(204).send('Ok')
         } catch (e) {

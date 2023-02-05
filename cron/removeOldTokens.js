@@ -6,7 +6,7 @@ const utc = require('dayjs/plugin/utc');
 dayjs.extend(utc);
 
 module.exports = new CronJob(
-    '* * * * * *',
+    '* * 1 * * *',
     async function () {
         try {
             console.log('Start removing tokens...');
