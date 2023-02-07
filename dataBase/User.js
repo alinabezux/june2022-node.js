@@ -5,7 +5,8 @@ const userSchema = new Schema({
     name: {type: String, required: true, default: ''},
     email: {type: String, required: true, trim: true, lowercase: true, unique: true},
     password: {type: String},
-    age: {type: Number, default: 18}
+    age: {type: Number, default: 18},
+    phone: {type: String, required: true}
 }, {
     timestamps: true,
     toJSON: {virtuals: true},

@@ -1,5 +1,9 @@
 const oauthService = require("../service/oauth.service");
 const emailService = require('../service/email.service');
+const smsService = require('../service/sms.service');
+const smsTemplate = require('../helper/sms_templates.helper');
+const {smsActionTYpeEnum} = require('../enum');
+
 const ActionToken = require('../dataBase/ActionToken');
 const OldPassword = require('../dataBase/OldPassword');
 const OAuth = require("../dataBase/OAuth");
@@ -8,15 +12,21 @@ const User = require('../dataBase/User');
 const {FRONTEND_URL} = require("../config/configs");
 const {FORGOT_PASSWORD_ACTION_ENUM} = require("../config/tokenActions.enum");
 const {WELCOME, FORGOT_PASSWORD} = require("../config/email-actions.enum");
+const {array} = require("joi");
 
 module.exports = {
     login: async (req, res, next) => {
         try {
             const {user, body} = req;
 
-            // await emailService.sendEmail(user.email, WELCOME, {userName: user.name},)
+            await Promise.allSettled([
+                emailService.sendEmail(user.email, WELCOME, {userName: user.name}),
+                smsService.sendSms(smsTemplate[smsActionTYpeEnum.WELCOME](user.name), user.phone)
+            ]);
+
 
             await user.comparePasswords(body.password);
+
             const tokenPair = oauthService.generateAccessTokenPair({id: user._id});
 
             await OAuth.create({...tokenPair, _user_id: user._id})

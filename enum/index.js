@@ -1,3 +1,4 @@
 module.exports = {
-    tokenTypeEnum: require('./tokenTypes.enum')
+    tokenTypeEnum: require('./tokenTypes.enum'),
+    smsActionTYpeEnum: require('./sms-action-type.enum')
 }
