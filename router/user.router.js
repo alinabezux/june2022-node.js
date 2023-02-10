@@ -3,6 +3,7 @@ const router = require('express').Router();
 const controller = require("../controller/user.controller");
 const mdlwr = require("../middleware/user.middleware");
 const authMdlwr = require("../middleware/auth.middleware");
+const {checkUploadImage} = require("../middleware/file.middleware");
 
 
 router.get('/', controller.getAllUsers);
@@ -23,5 +24,13 @@ router.put(
     controller.updateUser
 );
 router.delete('/:userId', mdlwr.isUserIdValid, controller.deleteUserById);
+
+router.patch(
+    '/:userId/avatar',
+    checkUploadImage,
+    mdlwr.isUserIdValid,
+    mdlwr.getUserDynamically('userId', 'params', '_id'),
+    controller.uploadAvatar
+);
 
 module.exports = router;
