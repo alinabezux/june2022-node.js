@@ -1,13 +1,18 @@
 const User = require("../dataBase/User");
-const oauthService = require("../service/oauth.service");
 const s3Service = require('../service/s3.service');
+const {userRepository} = require("../repository");
+const {userPresenter} = require("../presenter");
 
 module.exports = {
     getAllUsers: async (req, res, next) => {
         try {
-            const users = await User.find({});
 
-            res.json(users);
+            // const users = await User.find({});
+            const data = await userRepository.find(req.query);
+
+            data.users = await userPresenter.normalizeMany(data.users);
+
+            res.json(data);
         } catch (e) {
             next(e);
         }
@@ -36,7 +41,7 @@ module.exports = {
 
     createUser: async (req, res, next) => {
         try {
-            User.createUserWithHashPassword(req.body);
+            await User.createUserWithHashPassword(req.body);
 
             res.status(201).json('Ok')
         } catch (e) {
