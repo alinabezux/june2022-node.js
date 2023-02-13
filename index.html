@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"
+            integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+
+<button id="SendMsg">Send message</button>
+<button id="room1">room1</button>
+<button id="room2">room2</button>
+
+<script>
+    const SendMsg = document.getElementById('SendMsg');
+    const room1 = document.getElementById('room1');
+    const room2 = document.getElementById('room2');
+
+
+    const socket = io('http://localhost:5000', {
+        auth: {token: '2598412698712'},
+        query: {age: 20, page: 1},
+    });
+
+    SendMsg.onclick = () => {
+        socket.emit('message:send', {text: 'я СМСка,я прийшла...'})
+    };
+
+    socket.on('message:new', (text) => {
+        document.write(text);
+    });
+
+    room1.onclick = () => {
+        socket.emit('room:join', {roomId: 1})
+    };
+
+    room2.onclick = () => {
+        socket.emit('room:join', {roomId: 2})
+    };
+
+    socket.on('user:room:join', (userInfo) => {
+        alert(`User ${userInfo} joined room.`)
+    });
+
+
+</script>
+
+</body>
+</html>
